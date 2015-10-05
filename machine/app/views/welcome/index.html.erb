@@ -10,7 +10,7 @@
     </head>
 
     <body>
-          
+          <button id="test-button">Test</button>
         <div class="container">
             <div class="first-three">
                 <span class="one tic-tac-toe" data-number="1" data-row="0" data-column="0">1</span>
@@ -118,6 +118,9 @@
                         $(".player2").css("text-decoration","none");             
                     }
                 }
+                $("a").click(function(){
+                    console.log("been clicked");
+                });
                 function gameFinished(player)
                 {
                     gameOver = true;
@@ -131,7 +134,13 @@
                     else
                     {
                         $(".winner").text("Player " + player + " is the winner!!");
-                    }        
+                    }
+                    var link = document.createElement("a");
+                    var hrefValue = "/test";
+                    $(link).attr("href",hrefValue);
+                    $(link).text("click me");
+                    $("body")[0].appendChild(link);
+                    // $(link).click();    
                 }
                 function checkIfThreeInARow()
                 {
