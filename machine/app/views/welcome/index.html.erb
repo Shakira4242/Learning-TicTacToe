@@ -43,6 +43,20 @@
                            ['-','-','-']];
             var playersTurn = "player1";
             var gameOver = false;
+            function findCorrespondingElement(col,row)
+                {
+                    var returny;
+                    var rowArray = $("*[data-row]");
+                    rowArray.each(function(index,element){
+                        var newArray = $(element);
+                        if (newArray.data("row") === row && newArray.data("column") === col)
+                        {
+                            returny = newArray;
+                        }
+                    });
+                    return returny;
+                }
+                var currentMove;
             $(function() {
                 console.log("test");
                 var playAgainstComputer = prompt("Play against the Computer?");
@@ -56,13 +70,15 @@
                     {
                         var row = $(this).data("row");
                         var col = $(this).data("column");
+                        var color;
 
                         underlinePlayer(playersTurn);
                         
                         if (playersTurn === "player1")
                         {
                             var playersChoice = 'X';
-                            $(this).css("color","red");
+                            // $(this).css("color","red");
+                            color = "red";
                             playersTurn = "player2";
                         }
                         else if (playersTurn === "player2")
@@ -70,19 +86,22 @@
                             if (playAgainstComputer === "no")
                             {
                                 var playersChoice = 'O';
-                                $(this).css("color","blue");
+                                // $(this).css("color","blue");
+                                color = "blue";
                                 playersTurn = "player1";  
                             }
                         }
+                        updateBoard(col,row,color,playersChoice);
                         ticTacToeMatrix[col][row] = playersChoice;
-                        $(this).text(playersChoice);
+                        // $(this).text(playersChoice);
+                        // checkIfThreeInARow();
+                        isCatsGame(ticTacToeMatrix);  
                         if(playAgainstComputer === 'yes')
                         {
                             playersTurn = "player1";
                             ai();
                         }
-                        checkIfThreeInARow();
-                        isCatsGame(ticTacToeMatrix);    
+  
                     }
                 });
                 function ai()
@@ -96,8 +115,8 @@
                                 if (square ==='-')
                                 {
                                     ticTacToeMatrix[rIndex][sIndex] = 'O';
-                                    stopHere = true;
                                     updateBoard(rIndex,sIndex,'blue','O');
+                                    stopHere = true;
                                 } 
                             }
                         });
@@ -118,9 +137,7 @@
                         $(".player2").css("text-decoration","none");             
                     }
                 }
-                $("a").click(function(){
-                    console.log("been clicked");
-                });
+          
                 function gameFinished(player)
                 {
                     gameOver = true;
@@ -135,12 +152,14 @@
                     {
                         $(".winner").text("Player " + player + " is the winner!!");
                     }
-                    var link = document.createElement("a");
-                    var hrefValue = "/test";
-                    $(link).attr("href",hrefValue);
-                    $(link).text("click me");
-                    $("body")[0].appendChild(link);
-                    // $(link).click();    
+                    finalBoardState = "";
+                     ticTacToeMatrix.forEach(function(row,rIndex){
+                        row.forEach(function(square,sIndex){
+                            finalBoardState += square;
+                     });
+                        });
+                     console.log(finalBoardState);
+                    location.href = "http://localhost:3000/test/" + finalBoardState;
                 }
                 function checkIfThreeInARow()
                 {
@@ -240,6 +259,8 @@
                     $(thiss).text(playersChoice);
                     $(thiss).css("color",color);
                     checkIfThreeInARow();
+                    currentMove = findCorrespondingElement(col,row).data("number");
+                    console.log(currentMove);
                 }
                    
                 function isCatsGame(matrix)
@@ -250,19 +271,7 @@
                         $(".player").css("visibility","hidden");
                     }
                 }
-                function findCorrespondingElement(col,row)
-                {
-                    var returny;
-                    var rowArray = $("*[data-row]");
-                    rowArray.each(function(index,element){
-                        var newArray = $(element);
-                        if (newArray.data("row") === row && newArray.data("column") === col)
-                        {
-                            returny = newArray;
-                        }
-                    });
-                    return returny;
-                }   
+                   
             });
            function howManyPlys(matrix)
             {
