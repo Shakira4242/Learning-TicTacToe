@@ -109,15 +109,13 @@
                     {
                         $(".player2").css("text-decoration","underline");
                         $(".player2").css("color","blue");
-                        $(".player1").css("text-decoration","none");
-                                               
+                        $(".player1").css("text-decoration","none");              
                     }
                     else if(player === 'player2')
                     {
                         $(".player1").css("text-decoration","underline");
                         $(".player1").css("color","red"); 
-                        $(".player2").css("text-decoration","none");
-                                         
+                        $(".player2").css("text-decoration","none");             
                     }
                 }
                 function gameFinished(player)
@@ -225,8 +223,9 @@
                     }
                 }
             
-                function updateBoard(col,row,color,playersChoice,thiss)
+                function updateBoard(col,row,color,playersChoice)
                 {
+                    thiss = findCorrespondingElement(col,row);
                     console.log("column: ",col,"row: ",row, "playersChoice");
                     ticTacToeMatrix[col][row] = playersChoice;
                     $(thiss).text(playersChoice);
