@@ -11,12 +11,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151005052315) do
+ActiveRecord::Schema.define(version: 20151005230808) do
 
   create_table "histories", force: :cascade do |t|
     t.datetime "created_at",   null: false
     t.datetime "updated_at",   null: false
     t.string   "move_history"
+    t.string   "last_move"
   end
 
 end

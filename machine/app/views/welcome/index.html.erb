@@ -44,19 +44,20 @@
             var playersTurn = "player1";
             var gameOver = false;
             function findCorrespondingElement(col,row)
-                {
-                    var returny;
-                    var rowArray = $("*[data-row]");
-                    rowArray.each(function(index,element){
-                        var newArray = $(element);
-                        if (newArray.data("row") === row && newArray.data("column") === col)
-                        {
-                            returny = newArray;
-                        }
-                    });
-                    return returny;
-                }
-                var currentMove;
+            {
+                // console.log(col,row);
+                var returny;
+                var rowArray = $("*[data-row]");
+                rowArray.each(function(index,element){
+                    var newArray = $(element);
+                    if (newArray.data("row") === row && newArray.data("column") === col)
+                    {
+                        returny = newArray;
+                    }
+                });
+                return returny;
+            }
+            var currentMove;
             $(function() {
                 console.log("test");
                 var playAgainstComputer = prompt("Play against the Computer?");
@@ -77,7 +78,6 @@
                         if (playersTurn === "player1")
                         {
                             var playersChoice = 'X';
-                            // $(this).css("color","red");
                             color = "red";
                             playersTurn = "player2";
                         }
@@ -86,15 +86,12 @@
                             if (playAgainstComputer === "no")
                             {
                                 var playersChoice = 'O';
-                                // $(this).css("color","blue");
                                 color = "blue";
                                 playersTurn = "player1";  
                             }
                         }
                         updateBoard(col,row,color,playersChoice);
                         ticTacToeMatrix[col][row] = playersChoice;
-                        // $(this).text(playersChoice);
-                        // checkIfThreeInARow();
                         isCatsGame(ticTacToeMatrix);  
                         if(playAgainstComputer === 'yes')
                         {
@@ -107,7 +104,6 @@
                 function ai()
                 {
                     var stopHere = false;
-                    console.log(ticTacToeMatrix);
                     ticTacToeMatrix.forEach(function(row,rIndex){
                         row.forEach(function(square,sIndex){
                             if (stopHere === false)
@@ -153,13 +149,23 @@
                         $(".winner").text("Player " + player + " is the winner!!");
                     }
                     finalBoardState = "";
+                    var counter = 0
                      ticTacToeMatrix.forEach(function(row,rIndex){
                         row.forEach(function(square,sIndex){
-                            finalBoardState += square;
-                     });
+                            console.log(sIndex,rIndex);
+                            if (findCorrespondingElement(sIndex,rIndex).data("number") !== currentMove)
+                            {
+                                counter ++;
+                                finalBoardState += square;   
+                            }
+                            else
+                            {
+                                finalBoardState += '-';
+                            }                         
                         });
-                     console.log(finalBoardState);
-                    location.href = "http://localhost:3000/test/" + finalBoardState;
+                    });
+                     console.log("Counter is ",counter);
+                    location.href = "http://localhost:3000/test/" + finalBoardState + currentMove;
                 }
                 function checkIfThreeInARow()
                 {
@@ -254,13 +260,15 @@
                 function updateBoard(col,row,color,playersChoice)
                 {
                     thiss = findCorrespondingElement(col,row);
-                    console.log("column: ",col,"row: ",row, "playersChoice");
                     ticTacToeMatrix[col][row] = playersChoice;
                     $(thiss).text(playersChoice);
                     $(thiss).css("color",color);
                     checkIfThreeInARow();
-                    currentMove = findCorrespondingElement(col,row).data("number");
-                    console.log(currentMove);
+                    if(playersChoice ==='O')
+                    {
+                       currentMove = thiss.data("number");
+                    }
+                    
                 }
                    
                 function isCatsGame(matrix)
