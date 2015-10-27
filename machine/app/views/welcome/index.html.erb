@@ -10,7 +10,9 @@
     </head>
 
     <body>
-          <button id="test-button">Test</button>
+        <input type="text" id="get-moves">Put your text here</input>
+        <button id="make-board">Make board</button>
+        <button id="compare-positions">Get your comparison on player</button>
         <div class="container">
             <div class="first-three">
                 <span class="one tic-tac-toe" data-number="1" data-row="0" data-column="0">1</span>
@@ -36,7 +38,8 @@
 
     </body>
         <script>
-            console.log("test");
+            var finalBoardState = "";
+
             var ticTacArray = [0,0,0,0,0,0,0,0,0];
             var ticTacToeMatrix = [['-','-','-'],
                            ['-','-','-'],
@@ -45,7 +48,6 @@
             var gameOver = false;
             function findCorrespondingElement(col,row)
             {
-                // console.log(col,row);
                 var returny;
                 var rowArray = $("*[data-row]");
                 rowArray.each(function(index,element){
@@ -57,17 +59,70 @@
                 });
                 return returny;
             }
+            function howManyPlys(matrix)
+            {
+                var howMany = 0;
+                 matrix.forEach(function(subMatrix){
+                     subMatrix.forEach(function(move){
+                        if (move === "X" || (move === "O"))
+                        {
+                            howMany ++;
+                        }
+                    });
+                 });
+                return howMany;
+            }
             var currentMove;
             $(function() {
                 console.log("test");
-                var playAgainstComputer = prompt("Play against the Computer?");
-                           
+               
+                $("#make-board").click(function(){
+                    var input = $("#get-moves").val();
+
+                    ticTacToeMatrix.forEach(function(col,cIndex){
+                        col.forEach(function(square,sIndex){
+                            ticTacToeMatrix[cIndex][sIndex] = input[sIndex + 3 *cIndex];
+                        });    
+                    });
+                    makeBoardFromMatrix(ticTacToeMatrix);
+                });
+
+                $("#compare-positions").click(function(){
+                    
+                    var input = $("#get-moves").val();
+                    newMatrix = [[null,null,null],[null,null,null],[null,null,null]];
+                    newMatrix.forEach(function(col,cIndex){
+                        col.forEach(function(square,sIndex){
+                            newMatrix[cIndex][sIndex] = input[sIndex + 3 *cIndex];
+                        });    
+                    });
+
+
+                    console.log(areTheseTwoPositionsEqual(ticTacToeMatrix,newMatrix));
+                });
+                function makeBoardFromMatrix(matrix)
+                {     
+                    newMatrix = [[],[],[]];
+                    matrix.forEach(function(col,cIndex){
+                        col.forEach(function(square,sIndex){
+                            newMatrix[cIndex][sIndex] = square;
+                            if (square !== '-')
+                            {                         
+                                updateBoard(cIndex,sIndex,"green",square);
+                            }                      
+                        });    
+                    });
+                    return newMatrix;
+                }
+                
+                var playAgainstComputer = prompt("Play against the Computer?");         
                 if (playAgainstComputer === "yes")
                 {
                     $(".player").hide();  
                 }
                 $(".tic-tac-toe").click(function()
-                {   if ($(this).text()!=="X" && $(this).text()!=="O" && gameOver === false)
+                {   
+                    if ($(this).text()!=="X" && $(this).text()!=="O" && gameOver === false)
                     {
                         var row = $(this).data("row");
                         var col = $(this).data("column");
@@ -103,20 +158,41 @@
                 });
                 function ai()
                 {
-                    var stopHere = false;
-                    ticTacToeMatrix.forEach(function(row,rIndex){
-                        row.forEach(function(square,sIndex){
-                            if (stopHere === false)
-                            {
-                                if (square ==='-')
+                    //look up final positions in database
+                    if (gameOver === false)
+                    {
+                        var stopHere = false;
+                        ticTacToeMatrix.forEach(function(row,rIndex){
+                            row.forEach(function(square,sIndex){
+                                if (stopHere === false)
                                 {
-                                    ticTacToeMatrix[rIndex][sIndex] = 'O';
-                                    updateBoard(rIndex,sIndex,'blue','O');
-                                    stopHere = true;
-                                } 
-                            }
+                                    if (square ==='-')
+                                    {
+                                        ticTacToeMatrix[rIndex][sIndex] = 'O';
+                                        updateBoard(rIndex,sIndex,'blue','O');
+                                        stopHere = true;
+                                    } 
+                                }
+                            });
                         });
-                    });
+                    }
+                }
+
+                function areTheseTwoPositionsEqual(matrix1,matrix2)
+                {
+                    function matrixToString(matrix)
+                    {
+                        var stringy = "";
+                        matrix.forEach(function(array,index)
+                        {
+                            stringy += array.toString();    
+                        });
+                         
+                        return stringy
+                    }
+                    string1 = matrixToString(matrix1);
+                    string2 = matrixToString(matrix2);
+                    return string1 === string2;
                 }
                 function underlinePlayer(player)
                 {
@@ -148,24 +224,8 @@
                     {
                         $(".winner").text("Player " + player + " is the winner!!");
                     }
-                    finalBoardState = "";
-                    var counter = 0
-                     ticTacToeMatrix.forEach(function(row,rIndex){
-                        row.forEach(function(square,sIndex){
-                            console.log(sIndex,rIndex);
-                            if (findCorrespondingElement(sIndex,rIndex).data("number") !== currentMove)
-                            {
-                                counter ++;
-                                finalBoardState += square;   
-                            }
-                            else
-                            {
-                                finalBoardState += '-';
-                            }                         
-                        });
-                    });
-                     console.log("Counter is ",counter);
-                    location.href = "http://localhost:3000/test/" + finalBoardState + currentMove;
+                    alert(finalBoardState);
+                    location.href = "http://localhost:3000/test/" + finalBoardState + currentMove;         
                 }
                 function checkIfThreeInARow()
                 {
@@ -255,10 +315,32 @@
                             }
                         }
                     }
-                }
-            
+                }        
                 function updateBoard(col,row,color,playersChoice)
                 {
+                    if (playersChoice === 'O')
+                    {
+                        console.log(ticTacToeMatrix);
+                        finalBoardState = "";
+                        ticTacToeMatrix.forEach(function(col1,rIndex){
+                            col1.forEach(function(square,sIndex){
+                                if (col === rIndex && row === sIndex)
+                                {
+                                    finalBoardState += '-';   
+                                }
+                                else
+                                {                                    
+                                    finalBoardState += square;
+                                    if (square === 'X') 
+                                    {
+                                        console.log("col is ",rIndex, "row is ", sIndex);
+                                    }
+                                }
+                            });
+                        });
+                        console.log("Final board state is ", finalBoardState); 
+                    }
+                  
                     thiss = findCorrespondingElement(col,row);
                     ticTacToeMatrix[col][row] = playersChoice;
                     $(thiss).text(playersChoice);
@@ -267,8 +349,7 @@
                     if(playersChoice ==='O')
                     {
                        currentMove = thiss.data("number");
-                    }
-                    
+                    }               
                 }
                    
                 function isCatsGame(matrix)
@@ -278,23 +359,8 @@
                         $(".winner").text("There is no winner");
                         $(".player").css("visibility","hidden");
                     }
-                }
-                   
+                } 
             });
-           function howManyPlys(matrix)
-            {
-                var howMany = 0;
-                 matrix.forEach(function(subMatrix){
-                     subMatrix.forEach(function(move){
-                        if (move === "X" || (move === "O"))
-                        {
-                            howMany ++;
-                        }
-                    });
-                 });
-                return howMany;
-            }
-
             </script>
         </body>
 
