@@ -3,7 +3,7 @@
 
     </head>
     <body>
-        <h1>You got to the index page</h1>
+        <h1>Play some tic tac toe!</h1>
         <html>
     <head>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
@@ -75,53 +75,53 @@
             var currentMove;
             $(function() {
                 console.log("test");
-               
+
                 $("#make-board").click(function(){
                     var input = $("#get-moves").val();
 
                     ticTacToeMatrix.forEach(function(col,cIndex){
                         col.forEach(function(square,sIndex){
                             ticTacToeMatrix[cIndex][sIndex] = input[sIndex + 3 *cIndex];
-                        });    
+                        });
                     });
                     makeBoardFromMatrix(ticTacToeMatrix);
                 });
 
                 $("#compare-positions").click(function(){
-                    
+
                     var input = $("#get-moves").val();
                     newMatrix = [[null,null,null],[null,null,null],[null,null,null]];
                     newMatrix.forEach(function(col,cIndex){
                         col.forEach(function(square,sIndex){
                             newMatrix[cIndex][sIndex] = input[sIndex + 3 *cIndex];
-                        });    
+                        });
                     });
 
 
                     console.log(areTheseTwoPositionsEqual(ticTacToeMatrix,newMatrix));
                 });
                 function makeBoardFromMatrix(matrix)
-                {     
+                {
                     newMatrix = [[],[],[]];
                     matrix.forEach(function(col,cIndex){
                         col.forEach(function(square,sIndex){
                             newMatrix[cIndex][sIndex] = square;
                             if (square !== '-')
-                            {                         
+                            {
                                 updateBoard(cIndex,sIndex,"green",square);
-                            }                      
-                        });    
+                            }
+                        });
                     });
                     return newMatrix;
                 }
-                
-                var playAgainstComputer = prompt("Play against the Computer?");         
+
+                var playAgainstComputer = prompt("Play against the Computer?");
                 if (playAgainstComputer === "yes")
                 {
-                    $(".player").hide();  
+                    $(".player").hide();
                 }
                 $(".tic-tac-toe").click(function()
-                {   
+                {
                     if ($(this).text()!=="X" && $(this).text()!=="O" && gameOver === false)
                     {
                         var row = $(this).data("row");
@@ -129,7 +129,7 @@
                         var color;
 
                         underlinePlayer(playersTurn);
-                        
+
                         if (playersTurn === "player1")
                         {
                             var playersChoice = 'X';
@@ -142,18 +142,18 @@
                             {
                                 var playersChoice = 'O';
                                 color = "blue";
-                                playersTurn = "player1";  
+                                playersTurn = "player1";
                             }
                         }
                         updateBoard(col,row,color,playersChoice);
                         ticTacToeMatrix[col][row] = playersChoice;
-                        isCatsGame(ticTacToeMatrix);  
+                        isCatsGame(ticTacToeMatrix);
                         if(playAgainstComputer === 'yes')
                         {
                             playersTurn = "player1";
                             ai();
                         }
-  
+
                     }
                 });
                 function ai()
@@ -171,7 +171,7 @@
                                         ticTacToeMatrix[rIndex][sIndex] = 'O';
                                         updateBoard(rIndex,sIndex,'blue','O');
                                         stopHere = true;
-                                    } 
+                                    }
                                 }
                             });
                         });
@@ -185,9 +185,9 @@
                         var stringy = "";
                         matrix.forEach(function(array,index)
                         {
-                            stringy += array.toString();    
+                            stringy += array.toString();
                         });
-                         
+
                         return stringy
                     }
                     string1 = matrixToString(matrix1);
@@ -200,16 +200,16 @@
                     {
                         $(".player2").css("text-decoration","underline");
                         $(".player2").css("color","blue");
-                        $(".player1").css("text-decoration","none");              
+                        $(".player1").css("text-decoration","none");
                     }
                     else if(player === 'player2')
                     {
                         $(".player1").css("text-decoration","underline");
-                        $(".player1").css("color","red"); 
-                        $(".player2").css("text-decoration","none");             
+                        $(".player1").css("color","red");
+                        $(".player2").css("text-decoration","none");
                     }
                 }
-          
+
                 function gameFinished(player)
                 {
                     gameOver = true;
@@ -225,7 +225,7 @@
                         $(".winner").text("Player " + player + " is the winner!!");
                     }
                     alert(finalBoardState);
-                    location.href = "http://localhost:3000/test/" + finalBoardState + currentMove;         
+                    location.href = "http://localhost:3000/test/" + finalBoardState + currentMove;
                 }
                 function checkIfThreeInARow()
                 {
@@ -255,7 +255,7 @@
                                 {
                                     gameFinished(2);
                                 }
-                            } 
+                            }
                         }
                     }
                     function checkHorizontalThree()
@@ -275,7 +275,7 @@
                             }
                             else if (testIfTrue('O'))
                             {
-                                gameFinished(2);                    
+                                gameFinished(2);
                             }
                         }
                     }
@@ -315,7 +315,7 @@
                             }
                         }
                     }
-                }        
+                }
                 function updateBoard(col,row,color,playersChoice)
                 {
                     if (playersChoice === 'O')
@@ -326,21 +326,21 @@
                             col1.forEach(function(square,sIndex){
                                 if (col === rIndex && row === sIndex)
                                 {
-                                    finalBoardState += '-';   
+                                    finalBoardState += '-';
                                 }
                                 else
-                                {                                    
+                                {
                                     finalBoardState += square;
-                                    if (square === 'X') 
+                                    if (square === 'X')
                                     {
                                         console.log("col is ",rIndex, "row is ", sIndex);
                                     }
                                 }
                             });
                         });
-                        console.log("Final board state is ", finalBoardState); 
+                        console.log("Final board state is ", finalBoardState);
                     }
-                  
+
                     thiss = findCorrespondingElement(col,row);
                     ticTacToeMatrix[col][row] = playersChoice;
                     $(thiss).text(playersChoice);
@@ -349,9 +349,9 @@
                     if(playersChoice ==='O')
                     {
                        currentMove = thiss.data("number");
-                    }               
+                    }
                 }
-                   
+
                 function isCatsGame(matrix)
                 {
                     if (howManyPlys(matrix) === 9 && gameOver === false)
@@ -359,7 +359,7 @@
                         $(".winner").text("There is no winner");
                         $(".player").css("visibility","hidden");
                     }
-                } 
+                }
             });
             </script>
         </body>
