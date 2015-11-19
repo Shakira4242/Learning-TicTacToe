@@ -46,7 +46,7 @@
                            ['-','-','-']];
             var playersTurn = "player1";
             var gameOver = false;
-            function findCorrespondingElement(col,row)
+            findCorrespondingElement = function (col,row)
             {
                 var returny;
                 var rowArray = $("*[data-row]");
@@ -158,6 +158,19 @@
                 });
                 function ai()
                 {
+                    templateArray = copyMatrix(ticTacToeMatrix);
+                    function copyMatrix(original)
+                    {
+                        var dummyA = [];
+                        original.forEach(function(row,rIndex){
+                            dummyA.push([]);
+                            row.forEach(function(square,sIndex){
+                                dummyA[rIndex][sIndex] = square;
+                            });
+                        });
+                        return dummyA;
+                    }
+
                     //look up final positions in database
                     if (gameOver === false)
                     {
@@ -166,16 +179,56 @@
                             row.forEach(function(square,sIndex){
                                 if (stopHere === false)
                                 {
-                                    if (square ==='-')
+                                    var tempArray = copyMatrix(templateArray);
+                                    // tempArray[rIndex][sIndex] = 'O';
+                                    var dummyFinalState = finalState(null,null,tempArray);
+                                    if (square === '-')
                                     {
-                                        ticTacToeMatrix[rIndex][sIndex] = 'O';
-                                        updateBoard(rIndex,sIndex,'blue','O');
-                                        stopHere = true;
+                                        var badMoveArray = isInDataBase(dummyFinalState);
+                                        var beenPlayedBefore = false;
+                                        if (badMoveArray.length > 0)
+                                        {
+                                            badMoveArray.forEach(function(badMove){
+                                                console.log("Bad move is ",badMove);
+
+                                                if (badMove === findCorrespondingElement(rIndex,sIndex).data("number"))
+                                                {
+                                                    beenPlayedBefore = true;
+                                                }
+                                            });
+                                            if (!beenPlayedBefore)
+                                            {
+                                                var currentSquare = findCorrespondingElement(rIndex,sIndex).data("number");
+                                                console.log("Move we went with is ",currentSquare,"had this been played before ",beenPlayedBefore);
+                                                ticTacToeMatrix[rIndex][sIndex] = 'O';
+                                                updateBoard(rIndex,sIndex,'blue','O');
+                                                stopHere = true;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            ticTacToeMatrix[rIndex][sIndex] = 'O';
+                                            updateBoard(rIndex,sIndex,'blue','O');
+                                            stopHere = true;
+                                        }
                                     }
                                 }
                             });
                         });
                     }
+                }
+                function isInDataBase(candidateMove)
+                {
+                    console.log("candidateMove is ",candidateMove);
+                    var badMoveArray = [];
+                    <%for row in 0 ..@his.length-1 %>
+                        if ("<%=@his[row].move_history%>" === candidateMove)
+                        {
+                            // console.log("The last move played is ","<%=@his[row].last_move%>")
+                            badMoveArray.push(<%=@his[row].last_move %>);
+                        }
+                    <%end%>
+                    return badMoveArray;
                 }
 
                 function areTheseTwoPositionsEqual(matrix1,matrix2)
@@ -316,29 +369,29 @@
                         }
                     }
                 }
+                function finalState(col,row,matrix)
+                {
+                    var finalBoardState = "";
+                    matrix.forEach(function(col1,rIndex){
+                        col1.forEach(function(square,sIndex){
+                            if (col === rIndex && row === sIndex)
+                            {
+                                finalBoardState += '-';
+                            }
+                            else
+                            {
+                                finalBoardState += square;
+                            }
+                        });
+                    });
+                    return finalBoardState
+                }
                 function updateBoard(col,row,color,playersChoice)
                 {
                     if (playersChoice === 'O')
                     {
-                        console.log(ticTacToeMatrix);
                         finalBoardState = "";
-                        ticTacToeMatrix.forEach(function(col1,rIndex){
-                            col1.forEach(function(square,sIndex){
-                                if (col === rIndex && row === sIndex)
-                                {
-                                    finalBoardState += '-';
-                                }
-                                else
-                                {
-                                    finalBoardState += square;
-                                    if (square === 'X')
-                                    {
-                                        console.log("col is ",rIndex, "row is ", sIndex);
-                                    }
-                                }
-                            });
-                        });
-                        console.log("Final board state is ", finalBoardState);
+                        finalBoardState = finalState(col,row,ticTacToeMatrix);
                     }
 
                     thiss = findCorrespondingElement(col,row);
